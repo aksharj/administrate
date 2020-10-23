@@ -9,6 +9,14 @@ describe Admin::CustomersController, type: :controller do
       expect(locals[:resources]).to eq([customer])
     end
 
+    it "applies any scope overrides" do
+      _hidden_customer = create(:customer, hidden: true)
+      visible_customer = create(:customer, hidden: false)
+
+      locals = capture_view_locals { get :index }
+      expect(locals[:resources]).to contain_exactly visible_customer
+    end
+
     it "passes the search term to the view" do
       locals = capture_view_locals do
         get :index, search: "foo"
@@ -28,6 +36,35 @@ describe Admin::CustomersController, type: :controller do
 
       locals = capture_view_locals { get :index }
       expect(locals[:show_search_bar]).to be_truthy
+    end
+
+    it "sorts by id by default" do
+      customer1 = create(:customer)
+      customer2 = create(:customer)
+      customers = [customer1, customer2]
+
+      locals = capture_view_locals { get :index }
+      expect(locals[:resources].map(&:id)).to eq customers.map(&:id).sort
+    end
+
+    context "with alternate sorting attributes" do
+      controller(Admin::CustomersController) do
+        def default_sorting_attribute
+          :name
+        end
+
+        def default_sorting_direction
+          :desc
+        end
+      end
+
+      it "retrieves resources in the correct order" do
+        customers = create_list(:customer, 5)
+        sorted_customer_names = customers.map(&:name).sort.reverse
+
+        locals = capture_view_locals { get :index }
+        expect(locals[:resources].map(&:name)).to eq sorted_customer_names
+      end
     end
   end
 

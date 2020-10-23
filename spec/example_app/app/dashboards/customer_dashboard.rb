@@ -1,4 +1,5 @@
 require "administrate/base_dashboard"
+require "administrate/field/has_many_variant"
 
 class CustomerDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
@@ -8,13 +9,16 @@ class CustomerDashboard < Administrate::BaseDashboard
     lifetime_value: Field::Number.with_options(prefix: "$", decimals: 2),
     name: Field::String,
     orders: Field::HasMany.with_options(limit: 2, sort_by: :id),
+    log_entries: Field::HasManyVariant.with_options(limit: 2, sort_by: :id),
     updated_at: Field::DateTime,
     kind: Field::Select.with_options(collection: Customer::KINDS),
-    country: Field::BelongsTo.with_options(
+    territory: Field::BelongsTo.with_options(
       primary_key: :code,
       foreign_key: :country_code,
+      class_name: "Country",
       searchable: true,
-      searchable_field: "name",
+      searchable_fields: ["name"],
+      include_blank: true,
     ),
     password: Field::Password,
   }
@@ -26,9 +30,13 @@ class CustomerDashboard < Administrate::BaseDashboard
     :email,
     :email_subscriber,
     :kind,
-    :country,
+    :territory,
     :password,
   ].freeze
+
+  COLLECTION_FILTERS = {
+    vip: ->(resources) { resources.where(kind: :vip) },
+  }.freeze
 
   def display_resource(customer)
     customer.name

@@ -1,8 +1,12 @@
-# Administrate
+---
+title: Administrate
+home: true
+---
 
 [![CircleCI](https://img.shields.io/circleci/project/github/thoughtbot/administrate.svg)](https://circleci.com/gh/thoughtbot/administrate/tree/master)
 [![Gem Version](https://badge.fury.io/rb/administrate.svg)](https://badge.fury.io/rb/administrate)
 [![Code Climate](https://codeclimate.com/github/thoughtbot/administrate/badges/gpa.svg)](https://codeclimate.com/github/thoughtbot/administrate)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 A framework for creating flexible, powerful admin dashboards in Rails.
 [Try the demo][demo].
@@ -15,7 +19,7 @@ Check the [release notes] for important updates.
 
 [release notes]: https://github.com/thoughtbot/administrate/releases
 
-![administrate](https://cloud.githubusercontent.com/assets/903327/25823003/a5cc6aee-3408-11e7-8bcb-c62bb7addf40.png)
+![administrate](https://user-images.githubusercontent.com/11917/72203824-ec10f980-3468-11ea-9ac1-51cd28ff88b7.png)
 
 ## What Is Administrate?
 
@@ -42,8 +46,7 @@ To accomplish these goals, Administrate follows a few guiding principles:
 
 ## Getting Started
 
-Administrate supports Rails from 4.2, up to 5.0 and beyond. We support Ruby
-2.2.9 and up.
+Administrate supports Rails 5.0 onwards. We support Ruby 2.4 and up.
 
 Add Administrate to your Gemfile and re-bundle:
 
@@ -61,8 +64,23 @@ $ rails generate administrate:install
 Restart your server, and visit http://localhost:3000/admin
 to see your new dashboard in action.
 
-For more detailed instructions or to make it work with Rails API-only applications, please go through the ['Getting Started` guide](https://administrate-prototype.herokuapp.com/getting_started).
+For more detailed instructions or to make it work with Rails API-only applications, please go through the ['Getting Started' guide](https://administrate-prototype.herokuapp.com/getting_started).
 
+If your apps uses Sprockets 4, you'll need to add Administrate's assets to your `manifest.js` file. To do this, add these two lines to the file:
+
+```
+//= link administrate/application.css
+//= link administrate/application.js
+```
+
+Otherwise, your app will show you this error:
+
+```
+Asset `administrate/application.css` was not declared to be precompiled in production.
+Declare links to your assets in `app/assets/config/manifest.js`.
+```
+
+For more information on why this is necessary, see https://www.schneems.com/2017/11/22/self-hosted-config-introducing-the-sprockets-manifestjs
 
 ## Create Additional Dashboards
 
@@ -81,64 +99,24 @@ see the guides at
 These guides are available as markdown files in the `docs` subdirectory of the
 git repository, too.
 
-## Repository Structure
-
-This repository contains both the source code for Administrate,
-and a demo Rails app that uses Administrate.
-The demo app is [hosted publicly on Heroku][demo].
-
-- The gem's source code lives in the `app` and `lib` subdirectories.
-- The demo app is nested within `spec/example_app`.
-- The guides as seen at
-  [https://administrate-prototype.herokuapp.com][prototype_heroku] live as
-  markdown files in the `docs` subdirectory.
-
-Rails configuration files have been changed
-to recognize the app in the new location,
-so running the server or deploying to Heroku works normally.
-
-With this structure, developing a typical feature looks like:
-
-- Add tests in `spec/`
-- Implement a feature in `administrate/`
-- Exercise the feature using the demo rails app (`spec/example_app/app/`)
-
-## Front-end Architecture
-
-This project uses:
-
-- Sass
-- [BEM]-style CSS selectors, with [namespaces]
-- Autoprefixer
-- SCSS-Lint, with [Hound] ([configuration](.scss-lint.yml))
-- A variety of CSS units:
-  - `em` for typographical-related elements
-  - `rem` for lengths related to components
-  - `px` for borders, text shadows, etc.
-  - `vw`/`vh` for lengths that should be relational to the viewport
-
-[BEM]: http://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/
-[namespaces]: http://csswizardry.com/2015/03/more-transparent-ui-code-with-namespaces/
-[Hound]: https://houndci.com/
-
 ## Contributing
 
 Please see [CONTRIBUTING.md](/CONTRIBUTING.md).
 
-administrate was originally written by Grayson Wright and is now maintained by
+administrate was originally written by Grace Youngblood and is now maintained by
 Nick Charlton. Many improvements and bugfixes were contributed by the [open
 source
 community](https://github.com/thoughtbot/administrate/graphs/contributors).
 
 ## License
 
-administrate is Copyright © 2015-2018 thoughtbot.
+administrate is Copyright © 2015-2019 thoughtbot.
 It is free software, and may be redistributed under the terms specified in the
 [LICENSE](/LICENSE.md) file.
 
 ## About thoughtbot
 
-![thoughtbot](http://presskit.thoughtbot.com/images/thoughtbot-logo-for-readmes.svg)
+![thoughtbot](https://thoughtbot.com/brand_assets/93:44.svg)
 
 administrate is maintained and funded by thoughtbot, inc.
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.

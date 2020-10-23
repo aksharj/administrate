@@ -27,8 +27,8 @@ customer_attributes = Array.new(100) do
   name = "#{Faker::Name.first_name} #{Faker::Name.last_name}"
   {
     name: name,
-    email: Faker::Internet.safe_email(name),
-    country: countries.sample,
+    email: Faker::Internet.safe_email(name: name),
+    territory: countries.sample,
     password: Faker::Internet.password,
   }
 end
@@ -48,10 +48,28 @@ product_attributes = YAML.load_file(Rails.root.join('db/seeds/products.yml'))
 
 product_attributes.each do |attributes|
   attributes = attributes.merge product_meta_tag_attributes: {
-    meta_title: Faker::LordOfTheRings.character,
-    meta_description: Faker::LordOfTheRings.location,
+    meta_title: Faker::Movies::LordOfTheRings.character,
+    meta_description: Faker::Movies::LordOfTheRings.location,
   }
   Product.create! attributes.merge(price: 20 + rand(50))
+end
+
+Product.find_each do |p|
+  Page.create!(
+    title: "Something about #{p.name}",
+    body: Faker::Lorem.paragraph,
+    product: p,
+  )
+  Page.create!(
+    title: "The secrets of the game #{p.name}",
+    body: Faker::Lorem.paragraph,
+    product: p,
+  )
+  Page.create!(
+    title: "If you liked #{p.name}, you will love these games",
+    body: Faker::Lorem.paragraph,
+    product: p,
+  )
 end
 
 customers.each do |customer|

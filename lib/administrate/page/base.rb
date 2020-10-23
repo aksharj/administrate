@@ -15,7 +15,15 @@ module Administrate
         @resource_path ||= resource_name.gsub("/", "_")
       end
 
-      protected
+      def collection_includes
+        dashboard.try(:collection_includes) || []
+      end
+
+      def item_includes
+        dashboard.try(:item_includes) || []
+      end
+
+      private
 
       def attribute_field(dashboard, resource, attribute_name, page)
         value = get_attribute_value(resource, attribute_name)
@@ -25,8 +33,6 @@ module Administrate
 
       def get_attribute_value(resource, attribute_name)
         resource.public_send(attribute_name)
-      rescue NameError
-        nil
       end
 
       attr_reader :dashboard, :options

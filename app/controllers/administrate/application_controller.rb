@@ -7,9 +7,9 @@ module Administrate
       resources = Administrate::Search.new(scoped_resource,
                                            dashboard_class,
                                            search_term).run
-      resources = apply_resource_includes(resources)
+      resources = apply_collection_includes(resources)
       resources = order.apply(resources)
-      resources = resources.page(params[:page]).per(records_per_page)
+      resources = resources.page(params[:_page]).per(records_per_page)
       page = Administrate::Page::Collection.new(dashboard, order: order)
 
       render locals: {
@@ -27,7 +27,7 @@ module Administrate
     end
 
     def new
-      resource = resource_class.new
+      resource = new_resource
       authorize_resource(resource)
       render locals: {
         page: Administrate::Page::Form.new(dashboard, resource),
@@ -101,7 +101,27 @@ module Administrate
     end
 
     def order
-      @order ||= Administrate::Order.new(params[:order], params[:direction])
+      @order ||= Administrate::Order.new(sorting_attribute, sorting_direction)
+    end
+
+    def sorting_attribute
+      sorting_params.fetch(:order) { default_sorting_attribute }
+    end
+
+    def default_sorting_attribute
+      nil
+    end
+
+    def sorting_direction
+      sorting_params.fetch(:direction) { default_sorting_direction }
+    end
+
+    def default_sorting_direction
+      nil
+    end
+
+    def sorting_params
+      Hash.try_convert(request.query_parameters[resource_name]) || {}
     end
 
     def dashboard
@@ -122,8 +142,8 @@ module Administrate
       resource_class.default_scoped
     end
 
-    def apply_resource_includes(relation)
-      resource_includes = dashboard.association_includes
+    def apply_collection_includes(relation)
+      resource_includes = dashboard.collection_includes
       return relation if resource_includes.empty?
       relation.includes(*resource_includes)
     end
@@ -141,6 +161,8 @@ module Administrate
         else
           raise "Unrecognised param data: #{data.inspect}"
         end
+      elsif data.is_a?(ActionController::Parameters)
+        data.transform_values { |v| read_param_value(v) }
       else
         data
       end
@@ -150,6 +172,7 @@ module Administrate
       to: :resource_resolver
     helper_method :namespace
     helper_method :resource_name
+    helper_method :resource_class
 
     def resource_resolver
       @resource_resolver ||=
